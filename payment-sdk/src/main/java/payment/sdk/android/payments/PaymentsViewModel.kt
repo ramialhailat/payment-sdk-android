@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.google.android.gms.wallet.Wallet
-import com.google.android.gms.wallet.WalletConstants
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -228,6 +227,7 @@ internal class PaymentsViewModel(
                 _effects.emit(PaymentsVMEffects.Failed("Authorization or Google Pay URL is missing"))
                 return@launch
             }
+            _uiState.emit(PaymentsVMUiState.Loading(LoadingMessage.LOADING))
 
             val googlePayUrl = currentState.googlePayUiConfig.googlePayAcceptUrl
             val accessToken = currentState.accessToken
@@ -241,7 +241,14 @@ internal class PaymentsViewModel(
                     )
                 )
 
-                is SDKHttpResponse.Success -> _effects.emit(PaymentsVMEffects.Captured)
+                is SDKHttpResponse.Success -> {
+                    val responseBody = response.body
+                    if (responseBody.contains("FAILED", ignoreCase = true)) {
+                        _effects.emit(PaymentsVMEffects.Failed("Payment declined"))
+                    } else {
+                        _effects.emit(PaymentsVMEffects.Captured)
+                    }
+                }
             }
         }
     }

@@ -41,6 +41,7 @@ fun CircularProgressDialog(message: LoadingMessage) {
             LoadingMessage.PAYMENT -> R.string.submitting_payment
             LoadingMessage.LOADING_ORDER -> R.string.message_loading_order_details
             LoadingMessage.THREE_DS -> R.string.launching_3d_secure
+            LoadingMessage.LOADING -> R.string.make_payment
         })
         Surface(
             modifier = Modifier
@@ -66,7 +67,7 @@ fun CircularProgressDialog(message: LoadingMessage) {
 }
 
 enum class LoadingMessage {
-    AUTH, PAYMENT, LOADING_ORDER, THREE_DS
+    AUTH, PAYMENT, LOADING_ORDER, THREE_DS,LOADING
 }
 
 @Preview(name = "PIXEL_4", device = Devices.PIXEL_4_XL)
